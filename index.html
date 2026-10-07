@@ -523,6 +523,9 @@ button:focus-visible { outline: 4px solid var(--sky); outline-offset: 3px; }
 .slotcar .sign { background: rgba(255,253,248,.7); }
 .slotcar.filled .sign { background: #FFFDF8; }
 .car.hint { outline: 8px solid #F6E7B8; animation: pulse 1.1s ease-in-out infinite; }
+/* village picture behind the play area, softened with a cream veil so pieces stay easy to read */
+.field.scenic { background: linear-gradient(rgba(247,242,232,.30), rgba(247,242,232,.62) 55%, rgba(247,242,232,.72)), var(--vbg) center / cover no-repeat; }
+.field.scenic .rail { background-color: rgba(247,242,232,.35); border-radius: 18px; }
 </style>
 
 <!-- START -->
@@ -694,10 +697,10 @@ button:focus-visible { outline: 4px solid var(--sky); outline-offset: 3px; }
     'ppobyongi-sleepy': 'ppobyongi-sleepy.jpg', 'ppobyongi-cheer': 'ppobyongi-cheer.jpg', 'ppobyongi-day-meadow': 'ppobyongi-meadow.jpg',
     'momo-day-stage': 'momo-sing.jpg', 'mungsil-day-bread': 'mungsil-chef.jpg',
     'nabi-laugh': 'nabi-laugh.jpg', 'boksil-laugh': 'boksil-laugh.jpg', 'mungsil-laugh': 'mungsil-laugh.jpg', 'bubu-laugh': 'bubu-laugh.jpg',
-    'pingping-laugh': 'pingping-laugh.jpg', 'lulu-laugh': 'lulu-laugh.jpg', 'nabi-surprise': 'nabi-surprise.jpg', 'nabi-cheer': 'nabi-cheer.jpg', 'village-rabbit': 'village-rabbit.jpg', 'village-cat': 'village-cat.jpg', 'village-dog': 'village-dog.jpg', 'village-squirrel': 'village-squirrel.jpg', 'village-bear': 'village-bear.jpg', 'village-penguin': 'village-penguin.jpg', 'village-fox': 'village-fox.jpg',
+    'pingping-laugh': 'pingping-laugh.jpg', 'lulu-laugh': 'lulu-laugh.jpg', 'nabi-surprise': 'nabi-surprise.jpg', 'nabi-cheer': 'nabi-cheer.jpg', 'village-owl': 'village-owl.jpg', 'village-rabbit': 'village-rabbit.jpg', 'village-cat': 'village-cat.jpg', 'village-dog': 'village-dog.jpg', 'village-squirrel': 'village-squirrel.jpg', 'village-bear': 'village-bear.jpg', 'village-penguin': 'village-penguin.jpg', 'village-fox': 'village-fox.jpg',
   };
   // Village background pictures (village-<id>.jpg) once drawn; until then the hero shows the chosen friend's scene.
-  const VILLAGE_BG = { rabbit: 'village-rabbit.jpg', cat: 'village-cat.jpg', dog: 'village-dog.jpg', squirrel: 'village-squirrel.jpg', bear: 'village-bear.jpg', penguin: 'village-penguin.jpg', fox: 'village-fox.jpg' };
+  const VILLAGE_BG = { owl: 'village-owl.jpg', rabbit: 'village-rabbit.jpg', cat: 'village-cat.jpg', dog: 'village-dog.jpg', squirrel: 'village-squirrel.jpg', bear: 'village-bear.jpg', penguin: 'village-penguin.jpg', fox: 'village-fox.jpg' };
   const OWNER_IMG = { momo: 'assets/momo-sing.jpg', mungsil: 'assets/mungsil-chef.jpg', ppobyongi: 'assets/ppobyongi-cheer.jpg',
     nabi: 'assets/nabi.jpg', boksil: 'assets/boksil.jpg', doto: 'assets/doto.jpg', bubu: 'assets/bubu.jpg', pingping: 'assets/pingping.jpg', lulu: 'assets/lulu.jpg' };
   const art = id => ART[id] ? 'assets/' + ART[id] : null;
@@ -1288,6 +1291,9 @@ button:focus-visible { outline: 4px solid var(--sky); outline-offset: 3px; }
     $('#g-acorns').textContent = S.acorns;
     $('#field').classList.toggle('tinted', v.id !== 'rabbit');
     $('#field').style.setProperty('--tint', v.tint);
+    // Play happens in front of the village's own picture once it exists.
+    $('#field').classList.toggle('scenic', !!VILLAGE_BG[v.id]);
+    $('#field').style.setProperty('--vbg', VILLAGE_BG[v.id] ? `url("assets/${VILLAGE_BG[v.id]}")` : 'none');
     $('#g-owner').innerHTML = OWNER_IMG[v.owner] ? `<img src="${OWNER_IMG[v.owner]}" alt="${CH[v.owner].name}">` : `<span class="o">${CH[v.owner].em}</span>`;
     streak = 0; poke();
     show('game');
