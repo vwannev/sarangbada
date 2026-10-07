@@ -524,7 +524,7 @@ button:focus-visible { outline: 4px solid var(--sky); outline-offset: 3px; }
 .slotcar.filled .sign { background: #FFFDF8; }
 .car.hint { outline: 8px solid #F6E7B8; animation: pulse 1.1s ease-in-out infinite; }
 /* village picture behind the play area, softened with a cream veil so pieces stay easy to read */
-.field.scenic { background: linear-gradient(rgba(247,242,232,.30), rgba(247,242,232,.62) 55%, rgba(247,242,232,.72)), var(--vbg) center / cover no-repeat; }
+.field.scenic { background: linear-gradient(rgba(247,242,232,.12), rgba(247,242,232,.40) 55%, rgba(247,242,232,.55)), var(--vbg) center / cover no-repeat; }
 .field.scenic .rail { background-color: rgba(247,242,232,.35); border-radius: 18px; }
 </style>
 
@@ -2036,5 +2036,5 @@ button:focus-visible { outline: 4px solid var(--sky); outline-offset: 3px; }
 })();
 </script>
 <script>
-if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(() => {});
+if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) { const had = !!navigator.serviceWorker.controller; let done = false; navigator.serviceWorker.addEventListener('controllerchange', () => { if (had && !done) { done = true; location.reload(); } }); navigator.serviceWorker.register('sw.js').then(r => r.update()).catch(() => {}); }
 </script>
