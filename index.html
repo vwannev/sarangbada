@@ -473,6 +473,12 @@ button:focus-visible { outline: 4px solid var(--sky); outline-offset: 3px; }
 @keyframes giggle { 0%, 100% { transform: none } 20%, 60% { transform: rotate(-6deg) scale(1.05) } 40%, 80% { transform: rotate(6deg) scale(1.05) } }
 #hero-img.hop { animation: hop .55s cubic-bezier(.3,1.6,.5,1); }
 .visitor .o { animation: breathe 3s ease-in-out infinite; cursor: pointer; }
+.shopgrid .slot .lbl { font-size: 16px; line-height: 1.25; text-align: center; }
+.shopgrid .slot .pic { position: relative; }
+.shopgrid .slot.have { background: var(--paper-deep); box-shadow: none; opacity: .55; }
+.shopgrid .slot.have .pic img { filter: grayscale(.6); }
+.havetag { position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); white-space: nowrap; background: var(--sage-deep); color: #fff; font-family: var(--font-display); font-size: 15px; padding: 3px 10px; border-radius: 999px; }
+.shopgrid .slot.have.pop { animation: shake .45s; }
 </style>
 
 <!-- START -->
@@ -937,10 +943,23 @@ button:focus-visible { outline: 4px solid var(--sky); outline-offset: 3px; }
     let say;
     if (S.rounds >= limit && envOwed <= 0) say = '오늘 정말 잘했어! 내일 또 만나!';
     else if (envOwed > 0) say = '봉투가 왔어! 얼른 열어 보자!';
-    else if (S.rounds === 0) say = `안녕! 오늘도 ${v.name}에 놀러 가자!`;
+    else if (S.rounds === 0) say = greet(v);
     else say = `좋아! ${limit - S.rounds}판만 더 하면 봉투가 와!`;
     $('#ppo-say').textContent = say;
   }
+  // Each village says hello in its own way; the line changes day to day.
+  const GREET = {
+    rabbit: ['안녕! 모모가 당근밭에서 기다리고 있어!', '깡충깡충! 토끼 마을에서 모음 놀이 하자!', '모모가 새 노래를 지었대. 들으러 가자!'],
+    cat: ['나비가 창가에서 하품하고 있어. 깨우러 가자!', '야옹! 고양이 마을에 털실 공이 굴러왔어!', '나비랑 자음 숨바꼭질 하자!'],
+    dog: ['멍멍! 복실이가 꼬리를 흔들며 기다려!', '복실이가 공을 물고 왔어. 같이 놀자!', '강아지 마을에서 글자를 합쳐 보자!'],
+    squirrel: ['도토가 도토리를 잔뜩 모았대!', '다람쥐 마을 나무 집에 놀러 가자!', '도토 가게에 새 그림이 들어왔을까?'],
+    bear: ['음, 고소한 냄새! 뭉실이가 빵을 굽고 있어!', '곰 마을에 꿀 냄새가 솔솔 나!', '뭉실이가 따끈한 빵 하나 주겠대!'],
+    owl: ['부부 선생님이 책을 펴고 기다리셔!', '부엉부엉! 부엉이 마을 도서관에 가자!', '오늘 밤엔 부부랑 별도 볼 수 있을까?'],
+    penguin: ['핑핑이가 얼음 미끄럼틀을 만들었대!', '펭귄 마을은 오늘도 시원해! 목도리 챙기자!', '핑핑이랑 눈사람 만들러 가자!'],
+    fox: ['루루가 새 마술을 보여 준대!', '여우 마을에 반짝반짝 별이 떴어!', '루루의 꽃 마술, 보러 갈까?'],
+    forest: ['이야기 숲에 새 이야기가 숨어 있어!', '쉿, 나무들이 이야기를 속삭이고 있어!', '오늘은 어떤 그림책을 읽어 볼까?'],
+  };
+  const greet = v => { const l = GREET[v.id]; if (!l) return `안녕! 오늘도 ${v.name}에 놀러 가자!`; const d = +today().replace(/-/g, ''); return l[d % l.length]; };
   const envelopesEarned = () => (S.rounds >= rpd(S) ? 1 : 0) + (S.extra && S.rounds >= rpd(S) + EXTRA_ROUNDS ? 1 : 0);
 
   function arrival(next) {
@@ -1843,15 +1862,22 @@ button:focus-visible { outline: 4px solid var(--sky); outline-offset: 3px; }
 
   // ---------- 도토 가게 ----------
   function openShop() {
-    const items = commonPool(['face', 'day', 'job']);
+    // Pictures already in the album stay on the shelf, marked and set aside at the end, so it's clear they don't need buying.
+    const items = CARDS.filter(c => ['face', 'day', 'job'].includes(c.series) && friendsMet().includes(c.who)).sort((a, b) => owned(a.id) - owned(b.id));
+    const left = items.filter(c => !owned(c.id)).length;
     speak(S.acorns >= SHOP_PRICE ? '어서 와! 도토리 열 개로 그림 한 장을 고를 수 있어!' : `어서 와! 도토리 열 개를 모으면 그림을 고를 수 있어!`);
     overlay(`<h2>🐿️ 도토 가게</h2><p>도토리 ${SHOP_PRICE}개로 좋아하는 그림 1장을 골라요. 지금 🌰 ${S.acorns}개${S.acorns < SHOP_PRICE ? `, ${SHOP_PRICE - S.acorns}개 더 모아요` : ''}.</p>
-      ${items.length ? `<div class="shopgrid">${items.map(c => `<button class="slot g-${c.grade}" data-id="${c.id}" ${S.acorns < SHOP_PRICE ? 'disabled' : ''}><div class="pic">${pic(c)}</div><span class="lbl">${c.short}</span><span class="price">🌰 ${SHOP_PRICE}</span></button>`).join('')}</div>` : '<p>지금 살 수 있는 그림을 다 모았어요!</p>'}
+      ${left ? '' : '<p>지금 살 수 있는 그림을 다 모았어요!</p>'}
+      <div class="shopgrid">${items.map(c => owned(c.id)
+        ? `<button class="slot have g-${c.grade}" data-id="${c.id}" data-have="1"><div class="pic">${pic(c)}<span class="havetag">✔ 있어요</span></div><span class="lbl">${c.name}</span></button>`
+        : `<button class="slot g-${c.grade}" data-id="${c.id}" ${S.acorns < SHOP_PRICE ? 'disabled' : ''}><div class="pic">${pic(c)}</div><span class="lbl">${c.name}</span><span class="price">🌰 ${SHOP_PRICE}</span></button>`).join('')}</div>
       <button class="okbtn soft" id="no">나가기</button>`,
       s => {
         s.classList.add('wide'); s.querySelector('#no').onclick = closeOverlay;
         s.querySelectorAll('.shopgrid .slot').forEach(b => b.onclick = () => {
-          const c = cardById(b.dataset.id); speak(`${c.name}, 이 그림 살까?`);
+          const c = cardById(b.dataset.id);
+          if (b.dataset.have) { b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop'); return speak(`${c.name}, 이건 벌써 앨범에 있어!`); }
+          speak(`${c.name}, 이 그림 살까?`);
           overlay(`<h2>이 그림을 살까요?</h2><div class="${frameCls(c)}">${pic(c, true)}</div><p>${c.name} · 🌰 ${SHOP_PRICE}개</p><div class="row"><button class="okbtn" id="yes">살래요</button><button class="okbtn soft" id="back">다시 고를래요</button></div>`,
             s2 => {
               s2.querySelector('#back').onclick = openShop;
