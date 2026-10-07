@@ -479,6 +479,50 @@ button:focus-visible { outline: 4px solid var(--sky); outline-offset: 3px; }
 .shopgrid .slot.have .pic img { filter: grayscale(.6); }
 .havetag { position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); white-space: nowrap; background: var(--sage-deep); color: #fff; font-family: var(--font-display); font-size: 15px; padding: 3px 10px; border-radius: 999px; }
 .shopgrid .slot.have.pop { animation: shake .45s; }
+
+/* ---------- 3D toon look for play pieces ----------
+   Matches the 3D toon art: no outlines, a hard two-tone light/shade split, a chunky
+   underside and a soft ground shadow so pieces look like toys you could pick up. */
+:root { --toon-ink: rgba(91,74,66,.22); --toon-amb: 0 16px 18px -8px rgba(91,74,66,.28); }
+.toon, .blk, .tile, .oc, .house, .rider, .mcard .bk, .mcard .fc, .slot-b.full {
+  --tc: var(--card);
+  background: linear-gradient(170deg, color-mix(in srgb, var(--tc) 82%, #fff) 0 52%, var(--tc) 52% 100%) !important;
+  box-shadow: inset 0 4px 0 rgba(255,255,255,.65), inset 0 -9px 0 rgba(91,74,66,.10), 0 8px 0 color-mix(in srgb, var(--tc) 62%, #6E5A52), var(--toon-amb) !important;
+}
+.blk.c, .slot-b.full.c { --tc: var(--sage); } .blk.v, .slot-b.full.v { --tc: var(--sky); }
+.blk, .tile .ch, .slot-b, .mcard .fc, .car .sign { text-shadow: 0 3px 0 rgba(255,255,255,.55); }
+.blk { border-radius: 24px; }
+.blk:active { transform: translateY(4px); }
+.tile { --tc: var(--card); }
+.tile::after { content: ''; position: absolute; inset: 8px; border-radius: 28px; box-shadow: inset 0 0 0 7px var(--tint); pointer-events: none; }
+.tile.hint { outline: 8px solid #F6E7B8; animation: pulse 1.1s ease-in-out infinite; }
+.mcard .bk { --tc: #FFFDF8; } .mcard .fc { --tc: var(--paper-deep); } .mcard.done .fc { --tc: var(--sage); }
+.oc { --tc: var(--card); } .oc.sel { --tc: var(--mustard); } .oc.done { --tc: var(--sage); }
+.oc span { filter: drop-shadow(0 3px 2px rgba(91,74,66,.25)); }
+.rider, .house .pic, .tile.quiz .qp, .mcard .fc.pic { filter: drop-shadow(0 6px 4px rgba(91,74,66,.22)); }
+.carrot svg { filter: drop-shadow(0 12px 8px rgba(91,74,66,.25)); }
+
+/* train: engine, painted cars with wheels, rail with sleepers */
+.rail { gap: 14px; padding-bottom: 22px; border-bottom: 0; background:
+  linear-gradient(#A8988C, #A8988C) bottom 6px left 0 / 100% 7px no-repeat,
+  repeating-linear-gradient(90deg, #C9B9A8 0 14px, transparent 14px 34px) bottom 0 left 0 / 100% 12px no-repeat; }
+.engine { transform: none; width: clamp(150px, 19vw, 210px); line-height: 0; margin-bottom: -6px; }
+.engine svg { width: 100%; height: auto; display: block; }
+.engine .puff { animation: puff 2.4s ease-in-out infinite; transform-origin: 30px 12px; }
+@keyframes puff { 0% { opacity: 0; transform: translate(6px, 10px) scale(.5) } 30% { opacity: 1 } 100% { opacity: 0; transform: translate(-6px, -8px) scale(1.2) } }
+.car { --tc: #F0CBB8; position: relative; border: 0 !important; border-radius: 22px 22px 16px 16px; margin-bottom: 14px;
+  background: linear-gradient(170deg, color-mix(in srgb, var(--tc) 80%, #fff) 0 50%, var(--tc) 50% 100%);
+  box-shadow: inset 0 5px 0 rgba(255,255,255,.55), inset 0 -10px 0 rgba(91,74,66,.12), 0 7px 0 color-mix(in srgb, var(--tc) 60%, #6E5A52), var(--toon-amb); }
+.rail > .car:nth-child(4n+2) { --tc: #F0CBB8; } .rail > .car:nth-child(4n+3) { --tc: #BFD3A9; }
+.rail > .car:nth-child(4n+4) { --tc: #B9D2DE; } .rail > .car:nth-child(4n+5) { --tc: #EDD79F; }
+.car::before { content: ''; position: absolute; left: 8%; right: 8%; top: -12px; height: 16px; border-radius: 10px 10px 4px 4px; background: color-mix(in srgb, var(--tc) 70%, #6E5A52); z-index: -1; }
+.car::after { content: ''; position: absolute; bottom: -24px; left: 16%; right: 16%; height: 28px;
+  background: radial-gradient(circle at 14px 14px, #E6CC8F 0 5px, #7B655C 5.5px 14px, transparent 14.5px) left / 28px 28px no-repeat,
+              radial-gradient(circle at 14px 14px, #E6CC8F 0 5px, #7B655C 5.5px 14px, transparent 14.5px) right / 28px 28px no-repeat; }
+.car .sign { background: #FFFDF8; box-shadow: inset 0 -5px 0 rgba(91,74,66,.08), 0 3px 0 rgba(91,74,66,.12); }
+.slotcar .sign { background: rgba(255,253,248,.7); }
+.slotcar.filled .sign { background: #FFFDF8; }
+.car.hint { outline: 8px solid #F6E7B8; animation: pulse 1.1s ease-in-out infinite; }
 </style>
 
 <!-- START -->
@@ -1255,7 +1299,24 @@ button:focus-visible { outline: 4px solid var(--sky); outline-offset: 3px; }
   const nextQ = ask => setTimeout(() => { G.locked = false; G.i++; G.i < G.qs.length ? ask() : finishGame(); }, 1200);
 
   // 1. 소리 듣고 찾기
-  const carrotSVG = `<svg viewBox="0 0 120 160" aria-hidden="true"><ellipse class="glow" cx="60" cy="92" rx="58" ry="66" fill="#F6E7B8"/><path d="M52 28 C40 6 30 8 26 14 C38 16 44 24 48 32 Z" fill="#9DB384"/><path d="M60 30 C60 4 70 0 76 4 C70 12 66 20 64 32 Z" fill="#8FA27A"/><path d="M66 32 C80 12 92 14 96 20 C84 22 76 28 70 36 Z" fill="#9DB384"/><path d="M22 44 Q60 22 98 44 Q100 70 82 112 Q70 146 60 152 Q50 146 38 112 Q20 70 22 44 Z" fill="#EBB58F"/><path d="M32 70 l14 4 M78 92 l12 -4 M40 112 l10 3" stroke="#D69A74" stroke-width="4" stroke-linecap="round"/></svg>`;
+  // Pastel toon locomotive (two-tone cel shading, no outlines) used by both train games.
+  const ENGINE_SVG = `<svg viewBox="0 0 150 120" aria-hidden="true">
+    <ellipse cx="78" cy="112" rx="66" ry="6" fill="rgba(91,74,66,.16)"/>
+    <g class="puff"><circle cx="30" cy="12" r="9" fill="#FFFDF8"/><circle cx="18" cy="6" r="6" fill="#FFFDF8" opacity=".8"/></g>
+    <rect x="22" y="22" width="18" height="26" rx="5" fill="#9C7F72"/><rect x="31" y="22" width="9" height="26" rx="4" fill="#87695D"/>
+    <rect x="17" y="18" width="28" height="9" rx="4.5" fill="#B0948A"/>
+    <rect x="8" y="44" width="92" height="46" rx="20" fill="#AFC6D2"/><path d="M8 70 h92 v4 a16 16 0 0 1 -16 16 h-60 a16 16 0 0 1 -16 -16 z" fill="#93AFBE"/>
+    <rect x="14" y="50" width="70" height="7" rx="3.5" fill="#D4E3EA"/>
+    <circle cx="10" cy="66" r="7" fill="#F3E3B6"/><circle cx="8.5" cy="64.5" r="2.5" fill="#FFFDF8"/>
+    <rect x="86" y="22" width="56" height="70" rx="12" fill="#EDBFA9"/><path d="M114 22 h16 a12 12 0 0 1 12 12 v46 a12 12 0 0 1 -12 12 h-16 z" fill="#DDA790"/>
+    <rect x="80" y="12" width="68" height="14" rx="7" fill="#A8877A"/><rect x="114" y="12" width="34" height="14" rx="7" fill="#957366"/>
+    <rect x="96" y="34" width="34" height="26" rx="8" fill="#FFFDF8"/><rect x="96" y="34" width="34" height="9" rx="6" fill="#EAF2F5"/>
+    <path d="M2 96 l16 -8 h10 v8 z" fill="#B0948A"/>
+    <g fill="#7B655C"><circle cx="34" cy="94" r="15"/><circle cx="70" cy="96" r="13"/><circle cx="116" cy="92" r="18"/></g>
+    <g fill="#E6CC8F"><circle cx="34" cy="94" r="6"/><circle cx="70" cy="96" r="5"/><circle cx="116" cy="92" r="7"/></g>
+    <rect x="30" y="91" width="90" height="6" rx="3" fill="#A8877A"/>
+  </svg>`;
+  const carrotSVG = `<svg viewBox="0 0 120 160" aria-hidden="true"><ellipse class="glow" cx="60" cy="92" rx="58" ry="66" fill="#F6E7B8"/><path d="M52 28 C40 6 30 8 26 14 C38 16 44 24 48 32 Z" fill="#9DB384"/><path d="M60 30 C60 4 70 0 76 4 C70 12 66 20 64 32 Z" fill="#8FA27A"/><path d="M66 32 C80 12 92 14 96 20 C84 22 76 28 70 36 Z" fill="#9DB384"/><path d="M22 44 Q60 22 98 44 Q100 70 82 112 Q70 146 60 152 Q50 146 38 112 Q20 70 22 44 Z" fill="#EBB58F"/><path d="M60 26 Q84 28 98 44 Q100 70 82 112 Q70 146 60 152 Z" fill="#DDA27C" opacity=".55"/><path d="M34 52 Q40 46 50 44" stroke="#F6D2B6" stroke-width="6" stroke-linecap="round" fill="none"/><path d="M32 70 l14 4 M78 92 l12 -4 M40 112 l10 3" stroke="#D69A74" stroke-width="4" stroke-linecap="round"/></svg>`;
   const findPrompt = it => speak(`${it.say}! ${it.say}${josa(it.say)} 찾아줘!`);
   function findAsk() {
     const { vid, item } = G.qs[G.i], v = V(vid); G.wrong = 0;
@@ -1402,7 +1463,7 @@ button:focus-visible { outline: 4px solid var(--sky); outline-offset: 3px; }
     drawProgress(G.qs.length);
     $('#g-say').textContent = item.kind === 'sent' ? '그림에 맞는 문장 칸을 골라 줘!' : '그림에 맞는 기차 칸에 태워 줘!';
     $('#board').innerHTML = `<div class="train" style="--tint:${v.tint}"><div class="platform"><div class="rider">${item.pic}</div></div>
-      <div class="rail"><span class="engine">🚂</span>${opts.map(o => `<button class="car" data-t="${o.t}"><span class="sign ${o.kind === 'sent' ? 's' : ''}">${o.t}</span><span class="seat"></span></button>`).join('')}</div></div>`;
+      <div class="rail"><span class="engine">${ENGINE_SVG}</span>${opts.map(o => `<button class="car" data-t="${o.t}"><span class="sign ${o.kind === 'sent' ? 's' : ''}">${o.t}</span><span class="seat"></span></button>`).join('')}</div></div>`;
     $('#board').querySelectorAll('.car').forEach(b => b.addEventListener('click', () => trainChoose(b)));
   }
   function trainChoose(btn) {
@@ -1692,7 +1753,7 @@ button:focus-visible { outline: 4px solid var(--sky); outline-offset: 3px; }
     drawProgress(G.qs.length);
     $('#g-say').textContent = '낱말을 순서대로 기차에 태워 줘!';
     $('#board').innerHTML = `<div class="train"><div class="platform"><div class="rider">${item.pic}</div></div>
-      <div class="rail"><span class="engine">🚂</span>${G.words.map((_, i) => `<span class="car slotcar" data-c="${i}"><span class="sign"></span></span>`).join('')}</div>
+      <div class="rail"><span class="engine">${ENGINE_SVG}</span>${G.words.map((_, i) => `<span class="car slotcar" data-c="${i}"><span class="sign"></span></span>`).join('')}</div>
       <div class="wordtray">${shuffle(G.words.map((w, i) => ({ w, i }))).map(o => `<button class="wcard" data-w="${o.i}">${o.w}</button>`).join('')}</div></div>`;
     $('#board').querySelectorAll('.wcard').forEach(b => b.onclick = () => placeWord(b));
   }
